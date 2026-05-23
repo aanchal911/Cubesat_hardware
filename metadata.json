@@ -1,0 +1,6 @@
+{
+  "name": "CubeSat Mission Control",
+  "description": "A futuristic mission control dashboard for monitoring and interacting with a CubeSat. Features real-time telemetry visualization, AI-powered anomaly detection, and natural language querying via the Gemini API.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

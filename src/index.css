@@ -1,0 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Orbitron:wght@400;500;700;900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-display: "Orbitron", sans-serif;
+}
+
+body {
+  margin: 0;
+  background-color: #0b1020;
+  color: #f1f5f9;
+  font-family: var(--font-sans);
+}
+
+/* Professional Polish Custom classes */
+.prof-header {
+  height: 4rem; /* h-16 */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: #0e1528;
+}
+
+.prof-panel {
+  background-color: #151e33;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 0.5rem; /* rounded-lg */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.prof-panel-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 0.5rem;
+}
+
+.prof-footer {
+  height: 2rem; /* h-8 */
+  background-color: #070b16;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Accent lighting indicators based on theme */
+.shadow-cyan-glow {
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.25);
+}
+
+.shadow-green-glow {
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.4);
+}
+
+/* Scrollbar styling for a high tech look */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(14, 21, 40, 0.3);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}

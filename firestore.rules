@@ -1,0 +1,133 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Global Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+    
+    // Request helpers
+    function incoming() {
+      return request.resource.data;
+    }
+    
+    function existing() {
+      return resource.data;
+    }
+    
+    // Entity Specific Validation Blueprints
+    function isValidTelemetry(data) {
+      return data.keys().hasAll(['time', 'temperature', 'humidity', 'pressure', 'ambientLight', 'vcc', 'battery', 'signal', 'createdAt']) &&
+        data.keys().size() == 9 &&
+        data.time is string && data.time.size() <= 20 &&
+        data.temperature is number &&
+        data.humidity is number &&
+        data.pressure is number &&
+        data.ambientLight is number &&
+        data.vcc is number &&
+        data.battery is number && data.battery >= 0 && data.battery <= 100 &&
+        data.signal is number &&
+        data.createdAt == request.time;
+    }
+    
+    function isValidLog(data) {
+      return data.keys().hasAll(['id', 'timestamp', 'level', 'message', 'createdAt']) &&
+        data.keys().size() == 5 &&
+        data.id is string && data.id.size() <= 128 &&
+        data.timestamp is string && data.timestamp.size() <= 20 &&
+        data.level is string && (data.level == 'DEBUG' || data.level == 'INFO' || data.level == 'WARN' || data.level == 'ERROR' || data.level == 'COMMAND') &&
+        data.message is string && data.message.size() <= 1000 &&
+        data.createdAt == request.time;
+    }
+    
+    function isValidStatus(data) {
+      return data.keys().hasAll(['battery', 'temperature', 'humidity', 'pressure', 'ambientLight', 'vcc', 'signal', 'roll', 'pitch', 'yaw', 'ax', 'ay', 'az', 'isAutoSpin', 'activeAnomaly', 'anomalyScore', 'stabilityScore', 'updatedAt']) &&
+        data.keys().size() == 18 &&
+        data.battery is number && data.battery >= 0 && data.battery <= 100 &&
+        data.temperature is number &&
+        data.humidity is number &&
+        data.pressure is number &&
+        data.ambientLight is number &&
+        data.vcc is number &&
+        data.signal is number &&
+        data.roll is number &&
+        data.pitch is number &&
+        data.yaw is number &&
+        data.ax is number &&
+        data.ay is number &&
+        data.az is number &&
+        data.isAutoSpin is bool &&
+        data.activeAnomaly is string && data.activeAnomaly.size() <= 50 &&
+        data.anomalyScore is number &&
+        data.stabilityScore is number &&
+        data.updatedAt == request.time;
+    }
+    
+    function isValidAnalysisReport(data) {
+      return data.keys().hasAll(['id', 'title', 'summary', 'temperatureAvg', 'batteryAvg', 'stabilityAvg', 'signalAvg', 'anomalyCount', 'verdict', 'details', 'createdAt']) &&
+        data.keys().size() == 11 &&
+        data.id is string && data.id.size() <= 128 &&
+        data.title is string && data.title.size() <= 150 &&
+        data.summary is string && data.summary.size() <= 1000 &&
+        data.temperatureAvg is number &&
+        data.batteryAvg is number &&
+        data.stabilityAvg is number &&
+        data.signalAvg is number &&
+        data.anomalyCount is number &&
+        data.verdict is string && (data.verdict == 'NOMINAL' || data.verdict == 'DEGRADED' || data.verdict == 'CRITICAL') &&
+        data.details is string && data.details.size() <= 5000 &&
+        data.createdAt == request.time;
+    }
+    
+    // Collection Match Blocks
+    
+    // Telemetry History List
+    match /telemetry_history/{telemetryId} {
+      allow read: if true;
+      allow create: if isSignedIn() && isValidId(telemetryId) && isValidTelemetry(incoming());
+      // Historical entries are read-only and write-once
+      allow update, delete: if false;
+    }
+
+    // Real ESP32 Telemetry collection from physical hardware
+    match /telemetry/{telemetryId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if false;
+    }
+    
+    // Flight logs
+    match /logs/{logId} {
+      allow read: if true;
+      allow create: if isSignedIn() && isValidId(logId) && isValidLog(incoming());
+      // Logs are read-only and write-once
+      allow update, delete: if false;
+    }
+    
+    // Live satellite status document
+    match /cubesat_status/{docId} {
+      allow read: if true;
+      allow create: if isSignedIn() && isValidId(docId) && isValidStatus(incoming());
+      allow update: if isSignedIn() && isValidId(docId) && isValidStatus(incoming()) && (
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'battery', 'temperature', 'humidity', 'pressure', 'ambientLight', 'vcc', 'signal',
+          'roll', 'pitch', 'yaw', 'ax', 'ay', 'az', 'isAutoSpin', 'activeAnomaly',
+          'anomalyScore', 'stabilityScore', 'updatedAt'
+        ])
+      );
+      allow delete: if false;
+    }
+    
+    // Analysis reports List
+    match /analysis_reports/{reportId} {
+      allow read: if true;
+      allow create: if isSignedIn() && isValidId(reportId) && isValidAnalysisReport(incoming());
+      allow update, delete: if false;
+    }
+  }
+}

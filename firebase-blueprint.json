@@ -1,0 +1,97 @@
+{
+  "entities": {
+    "telemetryHistory": {
+      "title": "TelemetryHistory",
+      "description": "Historical telemetry readings of the CubeSat",
+      "type": "object",
+      "properties": {
+        "time": { "type": "string" },
+        "temperature": { "type": "number" },
+        "humidity": { "type": "number" },
+        "pressure": { "type": "number" },
+        "ambientLight": { "type": "number" },
+        "vcc": { "type": "number" },
+        "battery": { "type": "number" },
+        "signal": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["time", "temperature", "humidity", "pressure", "ambientLight", "vcc", "battery", "signal", "createdAt"]
+    },
+    "logEntry": {
+      "title": "LogEntry",
+      "description": "Individual mission, command, and warning log entries of the CubeSat",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "level": { "type": "string", "enum": ["DEBUG", "INFO", "WARN", "ERROR", "COMMAND"] },
+        "message": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "timestamp", "level", "message", "createdAt"]
+    },
+    "cubesatStatus": {
+      "title": "CubesatStatus",
+      "description": "Real-time active status metrics, attitude, and system scores of the CubeSat",
+      "type": "object",
+      "properties": {
+        "battery": { "type": "number" },
+        "temperature": { "type": "number" },
+        "humidity": { "type": "number" },
+        "pressure": { "type": "number" },
+        "ambientLight": { "type": "number" },
+        "vcc": { "type": "number" },
+        "signal": { "type": "number" },
+        "roll": { "type": "number" },
+        "pitch": { "type": "number" },
+        "yaw": { "type": "number" },
+        "ax": { "type": "number" },
+        "ay": { "type": "number" },
+        "az": { "type": "number" },
+        "isAutoSpin": { "type": "boolean" },
+        "activeAnomaly": { "type": "string" },
+        "anomalyScore": { "type": "number" },
+        "stabilityScore": { "type": "number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["battery", "temperature", "humidity", "pressure", "ambientLight", "vcc", "signal", "roll", "pitch", "yaw", "ax", "ay", "az", "isAutoSpin", "activeAnomaly", "anomalyScore", "stabilityScore", "updatedAt"]
+    },
+    "analysisReport": {
+      "title": "AnalysisReport",
+      "description": "Historical assessment run regarding telemetry diagnostics and spacecraft health metrics",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "summary": { "type": "string" },
+        "temperatureAvg": { "type": "number" },
+        "batteryAvg": { "type": "number" },
+        "stabilityAvg": { "type": "number" },
+        "signalAvg": { "type": "number" },
+        "anomalyCount": { "type": "number" },
+        "verdict": { "type": "string" },
+        "details": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "title", "summary", "temperatureAvg", "batteryAvg", "stabilityAvg", "signalAvg", "anomalyCount", "verdict", "details", "createdAt"]
+    }
+  },
+  "firestore": {
+    "telemetry_history": {
+      "schema": "telemetryHistory",
+      "description": "Collection storing sliding history of CubeSat telemetry"
+    },
+    "logs": {
+      "schema": "logEntry",
+      "description": "Collection storing interactive and autonomous flight logs of the satellite"
+    },
+    "cubesat_status": {
+      "schema": "cubesatStatus",
+      "description": "Document tracking the latest live operational state of the CubeSat"
+    },
+    "analysis_reports": {
+      "schema": "analysisReport",
+      "description": "Collection storing deep diagnostic analysis results run on telemetry historical buffers"
+    }
+  }
+}
